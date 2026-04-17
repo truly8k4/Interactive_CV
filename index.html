@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visual Portfolio - Light Theme</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* LIGHT THEME VARIABLES */
+    :root {
+      --bg:       #f8f9fa; /* Nền xám rất sáng / trắng */
+      --surface:  #ffffff; /* Nền nổi bật trắng tinh */
+      --surface2: #f0f2f5; 
+      --accent:   #2563eb; /* Xanh dương đậm hơn cho nền sáng */
+      --accent2:  #3b82f6;
+      --frost:    #e0e7ff;
+      --muted:    #94a3b8;
+      --text:     #0f172a; /* Chữ xám đen đậm */
+      --dim:      #475569; /* Chữ phụ xám vừa */
+      --line:     rgba(37, 99, 235, 0.15);
+      --line2:    rgba(37, 99, 235, 0.08);
+      --card-text:#ffffff; /* Giữ chữ trên ảnh luôn màu trắng */
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400; /* Tăng độ đậm lên một chút cho nền sáng dễ đọc */
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CURSOR */
+    #cursor {
+      width: 8px; height: 8px; background: var(--accent);
+      border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999;
+      box-shadow: 0 0 14px var(--accent);
+    }
+    #cursorRing {
+      width: 30px; height: 30px;
+      border: 1px solid rgba(37, 99, 235, 0.45);
+      border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 1.5rem 5vw;
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(to bottom, rgba(248, 249, 250, 0.98) 0%, transparent 100%);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2.5rem; }
+    .nav-links a {
+      font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--dim); text-decoration: none; transition: color 0.2s;
+      font-weight: 500;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0 5vw 9vh; position: relative; overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--line2) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line2) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 35%, black 20%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 35%, black 20%, transparent 100%);
+    }
+    .hero-glow {
+      position: absolute; width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 65%);
+      top: -250px; right: -150px; pointer-events: none;
+      animation: pulse 7s ease-in-out infinite;
+    }
+    .hero-glow2 {
+      position: absolute; width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+      bottom: 5vh; left: 10vw; pointer-events: none;
+      animation: pulse 9s ease-in-out infinite reverse;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.08);opacity:0.65;} }
+
+    .hero-eyebrow {
+      font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.6rem;
+      display: flex; align-items: center; gap: 1rem;
+      font-weight: 600;
+      opacity: 0; animation: fadeUp 0.7s 0.3s forwards;
+    }
+    .hero-eyebrow::before { content:''; width:24px; height:1px; background:var(--accent); }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(54px, 9.5vw, 116px);
+      font-weight: 800; line-height: 0.9;
+      letter-spacing: -0.025em; color: var(--text);
+      opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
+    }
+    .hero-title .outline {
+      -webkit-text-stroke: 1.5px rgba(37, 99, 235, 0.6); /* Đổi viền chữ để hợp nền sáng */
+      color: transparent;
+    }
+
+    .hero-sub {
+      margin-top: 2rem; font-size: 14px; color: var(--dim);
+      max-width: 380px; line-height: 1.85; font-weight: 400;
+      opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+    }
+
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 3rem;
+      opacity: 0; animation: fadeUp 0.9s 1.0s forwards;
+    }
+    .stat-val {
+      font-family: 'Syne', sans-serif; font-size: 30px;
+      font-weight: 800; color: var(--text); line-height: 1;
+    }
+    .stat-label {
+      font-size: 9px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--dim); margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .hero-scroll {
+      position: absolute; right: 5vw; bottom: 9vh;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--dim); writing-mode: vertical-rl;
+      font-weight: 600;
+      opacity: 0; animation: fadeUp 1s 1.3s forwards;
+    }
+    .hero-scroll::after {
+      content:''; width:1px; height:48px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    /* TICKER */
+    .ticker {
+      overflow: hidden;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 0.85rem 0;
+      background: var(--surface);
+    }
+    .ticker-track {
+      display: flex; white-space: nowrap;
+      animation: tick 24s linear infinite;
+    }
+    .ticker-track span {
+      font-family: 'Syne', sans-serif; font-size: 10px;
+      letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--dim); padding: 0 2.5rem; font-weight: 600;
+    }
+    .ticker-track .sep { color: var(--accent); font-size: 7px; }
+    @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* GALLERY */
+    .gallery-section { padding: 5rem 4vw 9rem; }
+
+    .sec-head {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 2.5rem; padding: 0 1vw;
+    }
+    .sec-label {
+      font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--accent); display: flex; align-items: center; gap: 0.7rem;
+      font-weight: 600;
+    }
+    .sec-label::before { content:''; width:18px; height:1px; background:var(--accent); }
+    .sec-num {
+      font-family: 'Syne', sans-serif; font-size: 52px;
+      font-weight: 800; color: rgba(0, 0, 0, 0.05); /* Chỉnh số chìm cho nền sáng */
+      line-height:1; letter-spacing: -0.03em; user-select:none;
+    }
+
+    .masonry-grid { columns: 3; column-gap: 14px; }
+    @media(max-width:900px){.masonry-grid{columns:2;}}
+    @media(max-width:520px){.masonry-grid{columns:1;}}
+
+    .card {
+      break-inside: avoid; margin-bottom: 14px;
+      position: relative; overflow: hidden; border-radius: 5px;
+      border: 1px solid var(--line2); cursor: none;
+      opacity: 0; transform: translateY(26px);
+      transition: opacity 0.55s, transform 0.55s, border-color 0.3s, box-shadow 0.3s;
+      background: var(--surface); /* Fallback bg cho ảnh trong nền sáng */
+    }
+    .card.visible { opacity: 1; transform: translateY(0); }
+    .card:hover {
+      border-color: rgba(37, 99, 235, 0.4);
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.1);
+      z-index: 2;
+    }
+
+    .card img {
+      width: 100%; display: block;
+      transition: transform 0.75s cubic-bezier(0.23,1,0.32,1);
+      filter: brightness(0.95) saturate(0.95);
+    }
+    .card:hover img { transform: scale(1.06); filter: brightness(1) saturate(1); }
+
+    .card-overlay {
+      position: absolute; inset: 0;
+      /* Vẫn giữ overlay màu tối để text màu trắng nổi bật trên ảnh */
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+      opacity: 0; transition: opacity 0.38s;
+      display: flex; align-items: flex-end; padding: 1.4rem;
+    }
+    .card:hover .card-overlay { opacity: 1; }
+
+    .card-info { transform: translateY(8px); transition: transform 0.35s; }
+    .card:hover .card-info { transform: translateY(0); }
+
+    /* Nội dung trên card luôn màu trắng/sáng để dễ đọc trên overlay tối */
+    .card-num { font-size: 9px; letter-spacing: 0.28em; color: #7ec8ff; margin-bottom: 4px; font-weight: 600;}
+    .card-title {
+      font-family: 'Syne', sans-serif; font-size: 15px;
+      font-weight: 700; color: var(--card-text); line-height: 1.25;
+    }
+    .card-tag {
+      display: block; margin-top: 5px;
+      font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* corner pip mặc định (Mở ảnh) */
+    .card::after {
+      content:''; position:absolute; top:10px; right:10px;
+      width:7px; height:7px;
+      border-top: 1px solid rgba(255, 255, 255, 0.8);
+      border-right: 1px solid rgba(255, 255, 255, 0.8);
+      opacity:0; transition: opacity 0.3s;
+    }
+    .card:hover::after { opacity:1; }
+
+    /* Đổi corner pip thành mũi tên nếu có link */
+    .card[data-link]:not([data-link=""])::after {
+      content: '↗';
+      border: none; width: auto; height: auto;
+      font-size: 16px; color: #fff;
+      font-weight: bold;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 5rem 5vw 3rem;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .ft-top {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; margin-bottom: 3.5rem;
+    }
+    @media(max-width:640px){.ft-top{grid-template-columns:1fr;}}
+
+    .ft-brand {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(40px, 6vw, 70px);
+      font-weight: 800; line-height: 0.92;
+      letter-spacing: -0.02em; color: var(--text);
+    }
+    .ft-brand span { color: var(--accent); }
+
+    .ft-info h3 {
+      font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.7rem;
+      font-weight: 700;
+    }
+    .ft-info h3::before { content:''; width:14px; height:1px; background:var(--accent); }
+    .ft-info p { font-size: 13px; color: var(--dim); line-height: 1.9; font-weight: 500;}
+    .ft-socials { display: flex; gap: 1.5rem; margin-top: 1.8rem; flex-wrap: wrap; }
+    .ft-socials a {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--dim); text-decoration: none; font-weight: 600;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 2px; transition: color 0.2s, border-color 0.2s;
+    }
+    .ft-socials a:hover { color: var(--accent); border-color: var(--accent); }
+
+    .ft-bottom {
+      padding-top: 2.5rem; border-top: 1px solid var(--line);
+      display: flex; justify-content: space-between;
+      font-size: 9px; color: var(--dim); letter-spacing: 0.15em; font-weight: 500;
+    }
+
+    /* LIGHTBOX */
+    .lightbox {
+      position: fixed; inset: 0; background: rgba(255, 255, 255, 0.95); /* Nền lightbox sáng */
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 1000; display: flex;
+      align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.35s;
+    }
+    .lightbox.open { opacity: 1; pointer-events: all; }
+    .lightbox img {
+      max-width: 88vw; max-height: 82vh; object-fit: contain;
+      border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+    .lb-close {
+      position: absolute; top: 1.8rem; right: 2.5rem;
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--dim); cursor: none; transition: color 0.2s; font-weight: 700;
+    }
+    .lb-close:hover { color: var(--accent); }
+    .lb-caption {
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%); text-align: center;
+    }
+    .lb-caption h3 {
+      font-family: 'Syne', sans-serif; font-size: 17px;
+      font-weight: 700; color: var(--text);
+    }
+    .lb-caption p {
+      font-size: 9px; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--accent); margin-top: 4px; font-weight: 600;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor"></div>
+  <div id="cursorRing"></div>
+
+  <nav>
+    <a href="#" class="nav-logo">Port<span>.</span>folio</a>
+    <div class="nav-links">
+      <a href="#gallery">Projects</a>
+      <a href="#footer">Contact</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <p class="hero-eyebrow">Visual Design · Branding · Digital Art</p>
+    <h1 class="hero-title">Design<br><span class="outline">that moves</span></h1>
+    <p class="hero-sub">Tuyển tập tác phẩm thiết kế — từ branding, social media đến digital art và UI/UX.</p>
+    <div class="hero-stats">
+      <div><div class="stat-val">26</div><div class="stat-label">Typical products</div></div>
+      <div><div class="stat-val">8+</div><div class="stat-label">Categories</div></div>
+      <div><div class="stat-val">2026</div><div class="stat-label">Latest Work</div></div>
+    </div>
+    <div class="hero-scroll">Made by Tru Ly [Do Duc Thong]</div>
+  </section>
+
+  <div class="ticker">
+    <div class="ticker-track">
+      <span>Visual Design</span><span class="sep">✦</span><span>Branding</span><span class="sep">✦</span>
+      <span>Social Media</span><span class="sep">✦</span><span>Digital Art</span><span class="sep">✦</span>
+      <span>UI / UX</span><span class="sep">✦</span><span>Illustration</span><span class="sep">✦</span>
+      <span>Motion</span><span class="sep">✦</span><span>Photography</span><span class="sep">✦</span>
+      <span>Visual Design</span><span class="sep">✦</span><span>Branding</span><span class="sep">✦</span>
+      <span>Social Media</span><span class="sep">✦</span><span>Digital Art</span><span class="sep">✦</span>
+      <span>UI / UX</span><span class="sep">✦</span><span>Illustration</span><span class="sep">✦</span>
+      <span>Motion</span><span class="sep">✦</span><span>Photography</span><span class="sep">✦</span>
+    </div>
+  </div>
+
+  <section class="gallery-section" id="gallery">
+    <div class="sec-head">
+      <span class="sec-label">Typical products</span>
+      <span class="sec-num">26</span>
+    </div>
+
+    <div class="masonry-grid">
+      <!-- 
+        HƯỚNG DẪN:
+        - Thêm link vào data-link="..." nếu muốn click chuyển trang/xem video.
+        - Để trống data-link="" nếu muốn click mở ảnh phóng to (Lightbox).
+      -->
+
+      <div class="card" data-title="Art TikTok Design Music" data-tag="Digital Art · Motion" data-link="https://drive.google.com/file/d/1j_InbG94pZtt3hEJox67QPaf2Q-raooW/view?usp=sharing">
+        <img src="images/fulls/art_tiktok_design_music.png" alt="Art TikTok Design Music"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">01</p><h3 class="card-title">Art TikTok Design Music</h3>
+          <span class="card-tag">Digital Art · Motion</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Card Board Game" data-tag="Game Design · Illustration" data-link="https://canva.link/qto12n6yf7bokkb">
+        <img src="images/fulls/card_board_game.png" alt="Card Board Game"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">02</p><h3 class="card-title">Card Board Game</h3>
+          <span class="card-tag">Game Design · Illustration</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Case – Giá Của Sự Cống Hiến" data-tag="Presentation · Case Study" data-link="https://drive.google.com/file/d/141Hzlyj8HBAVtXHLtTDfAkoMxWRlNdVI/view?usp=sharing">
+        <img src="images/fulls/case.png" alt="Case"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">03</p><h3 class="card-title">Case – Giá Của Sự Cống Hiến</h3>
+          <span class="card-tag">Presentation · Case Study</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Case 02 – Elise Smart" data-tag="Branding · Fashion" data-link="https://drive.google.com/file/d/1l8nDsdSGtrNhaj1F-qj4BSEKPZBYOqTj/view?usp=sharing">
+        <img src="images/fulls/case02.png" alt="Case 02"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">04</p><h3 class="card-title">Case 02 – Elise Smart</h3>
+          <span class="card-tag">Branding · Fashion</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Company Templates – Google" data-tag="Presentation · Templates" data-link="https://drive.google.com/file/d/1BdjoP_jl9efLcZeZXb7c3ipwqshAD7xo/view?usp=sharing">
+        <img src="images/fulls/company_templates.png" alt="Company Templates"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">05</p><h3 class="card-title">Company Templates – Google</h3>
+          <span class="card-tag">Presentation · Templates</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Hiring – Kế Toán Hành Chính" data-tag="Social Media · Recruitment" data-link="">
+        <img src="images/fulls/hiring.png" alt="Hiring"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">06</p><h3 class="card-title">Hiring – Kế Toán Hành Chính</h3>
+          <span class="card-tag">Social Media · Recruitment</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Hiring Intern – Thực Tập Sinh" data-tag="Social Media · Recruitment" data-link="">
+        <img src="images/fulls/hiring_intern.png" alt="Hiring Intern"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">07</p><h3 class="card-title">Hiring Intern – Thực Tập Sinh</h3>
+          <span class="card-tag">Social Media · Recruitment</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Hiring 02 – Kế Toán Kho" data-tag="Social Media · Recruitment" data-link="">
+        <img src="images/fulls/hiring02.png" alt="Hiring 02"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">08</p><h3 class="card-title">Hiring 02 – Kế Toán Kho</h3>
+          <span class="card-tag">Social Media · Recruitment</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Lyrics Music Video" data-tag="Motion · Typography" data-link="https://www.youtube.com/watch?v=uAh26JOH0L8">
+        <img src="images/fulls/lyrics_music_video.png" alt="Lyrics Music Video"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">09</p><h3 class="card-title">Lyrics Music Video</h3>
+          <span class="card-tag">Motion · Typography</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Marketing – Tokyo Editorial" data-tag="Photography · Editorial" data-link="https://drive.google.com/file/d/1HHyL9BZXmu_LZUI3dkLYoKkJl5jKq-9V/view?usp=sharing">
+        <img src="images/fulls/marketing.png" alt="Marketing"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">10</p><h3 class="card-title">Marketing – Tokyo Editorial</h3>
+          <span class="card-tag">Photography · Editorial</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Marketing 02 – GDP Infographic" data-tag="Data Viz · Infographic" data-link="https://drive.google.com/file/d/1HHyL9BZXmu_LZUI3dkLYoKkJl5jKq-9V/view?usp=sharing">
+        <img src="images/fulls/marketing_02.png" alt="Marketing 02"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">11</p><h3 class="card-title">Marketing 02 – GDP Infographic</h3>
+          <span class="card-tag">Data Viz · Infographic</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Minigame – Visual Novel" data-tag="Game Design · Illustration" data-link="https://canva.link/d3aoxqxon6yte7w">
+        <img src="images/fulls/minigame.png" alt="Minigame"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">12</p><h3 class="card-title">Minigame – Visual Novel</h3>
+          <span class="card-tag">Game Design · Illustration</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Music Background Video – Đất Phương Nam" data-tag="Motion · Digital Art" data-link="https://drive.google.com/file/d/1OX_BRxXmiCIG4kIAiYFLivnt3bk8MwRs/view?usp=sharing">
+        <img src="images/fulls/music_background_video.png" alt="Music Background Video"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">13</p><h3 class="card-title">Music BG – Đất Phương Nam</h3>
+          <span class="card-tag">Motion · Digital Art</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Note – Thay Zếp Đô Brand" data-tag="Branding · Illustration" data-link="">
+        <img src="images/fulls/note.png" alt="Note"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">14</p><h3 class="card-title">Note</h3>
+          <span class="card-tag">Branding · Illustration</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Product Design – Victoria's Secret" data-tag="Product · Visual Design" data-link="">
+        <img src="images/fulls/product_design.png" alt="Product Design"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">15</p><h3 class="card-title">Product Design – Victoria's Secret</h3>
+          <span class="card-tag">Product · Visual Design</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Quy Định Sử Dụng Đẹp Văn Phòng" data-tag="Infographic · Internal" data-link="">
+        <img src="images/fulls/quy_dinh_su_dung_dep_van_phong.png" alt="Quy Dinh"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">16</p><h3 class="card-title">Quy Định Sử Dụng Đẹp VP</h3>
+          <span class="card-tag">Infographic · Internal</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Shape Flower Design" data-tag="Illustration · Art" data-link="https://drive.google.com/file/d/19gqwcuVW_tmpWhup2SXXpnEJXnuPaxMI/view?usp=sharing">
+        <img src="images/fulls/shape_flower_design.PNG" alt="Shape Flower Design"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">17</p><h3 class="card-title">Shape Flower Design</h3>
+          <span class="card-tag">Illustration · Art</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="Shoes Marketing – Footwear Campaign" data-tag="E-commerce · Product" data-link="">
+        <img src="images/fulls/shoes_marketing.png" alt="Shoes Marketing"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">18</p><h3 class="card-title">Shoes Marketing – Footwear</h3>
+          <span class="card-tag">E-commerce · Product</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="UI Game 01 – Game Component" data-tag="UI Design · Game" data-link="">
+        <img src="images/fulls/ui_game_01.png" alt="UI Game 01"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">19</p><h3 class="card-title">UI Game 01 – Component</h3>
+          <span class="card-tag">UI Design · Game</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="UI Game 02 – Game Interface" data-tag="UI Design · Game" data-link="">
+        <img src="images/fulls/ui_game02.png" alt="UI Game 02"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">20</p><h3 class="card-title">UI Game 02 – Interface</h3>
+          <span class="card-tag">UI Design · Game</span>
+        </div></div>
+      </div>
+
+      <div class="card" data-title="UI Web – Web Application" data-tag="UI/UX · Web Design" data-link="">
+        <img src="images/fulls/ui_web.png" alt="UI Web"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">21</p><h3 class="card-title">UI Web – Application</h3>
+          <span class="card-tag">UI/UX · Web Design</span>
+        </div></div>
+      </div>
+	  
+	  <div class="card" data-title="Branding" data-tag="Marketing Video" data-link="https://drive.google.com/file/d/1yGMKXda0Hr9ni9tqUIIrdbaxE1uNXZ5t/view?usp=sharing">
+        <img src="images/fulls/lachcach.png" alt="Video"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">22</p><h3 class="card-title">Marketing Video</h3>
+          <span class="card-tag">Marketing Video</span>
+        </div></div>
+      </div>
+	  
+	  <div class="card" data-title="Film" data-tag="Short horror film" data-link="https://youtu.be/-58rK-fVkBE?si=dWQGoxA8DlGUtyDy">
+        <img src="images/fulls/horror.jpg" alt="Video"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">23</p><h3 class="card-title">Short film</h3>
+          <span class="card-tag">Short horor film</span>
+        </div></div>
+      </div>
+	  
+	  <div class="card" data-title="Art" data-tag="Draw" data-link="https://drive.google.com/file/d/1N278Qc8nl7XP0yB7JMZq0E-Z_MxZLgl8/view?usp=sharing">
+        <img src="images/fulls/citylight.png" alt="Video"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">24</p><h3 class="card-title">Draw</h3>
+          <span class="card-tag">Draw</span>
+        </div></div>
+      </div>
+	  
+	  <div class="card" data-title="Presentation" data-tag="Presentation" data-link="https://canva.link/hoqi3ubgx4j2go9">
+        <img src="images/fulls/slide02.png" alt="Video"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">25</p><h3 class="card-title">Presentation</h3>
+          <span class="card-tag">Presentation</span>
+        </div></div>
+      </div>
+
+	  <div class="card" data-title="Presentation" data-tag="Presentation" data-link="https://canva.link/1o1cundn4l1hn2f">
+        <img src="images/fulls/slide01.png" alt="Video"/>
+        <div class="card-overlay"><div class="card-info">
+          <p class="card-num">26</p><h3 class="card-title">Presentation</h3>
+          <span class="card-tag">Presentation</span>
+        </div></div>
+      </div>
+	  
+    </div>
+  </section>
+
+  <footer id="footer">
+    <div class="ft-top">
+      <div>
+        <p class="ft-brand">Let's<br>work<br><span>together.</span></p>
+      </div>
+      <div class="ft-info">
+        <h3>Get in touch</h3>
+        <p>Gguardian132109@gmail.com<br>District 7, Ho Chi Minh City, Vietnam</p>
+        <div class="ft-socials">
+          <a href="https://www.instagram.com/truly8k4/">Instagram</a>
+          <a href="https://www.tiktok.com/@truly8k4">Tiktok</a>
+          <a href="linkedin.com/in/doducthong">LinkedIn</a>
+          <a href="https://www.facebook.com/truly8k4">Facebook</a>
+		  <a href="https://www.youtube.com/@truly8k4">Youtube</a>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <span>© 2026 Portfolio</span>
+      <span>Visual Design</span>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox">
+    <span class="lb-close" id="lbClose">✕ Close</span>
+    <img src="" id="lbImg" alt=""/>
+    <div class="lb-caption">
+      <h3 id="lbTitle"></h3>
+      <p id="lbTag"></p>
+    </div>
+  </div>
+
+  <script>
+    // Cursor
+    const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function tick(){
+      cur.style.cssText=`left:${mx-4}px;top:${my-4}px;`;
+      rx+=(mx-rx)*0.1;ry+=(my-ry)*0.1;
+      ring.style.cssText=`left:${rx-15}px;top:${ry-15}px;`;
+      requestAnimationFrame(tick);
+    })();
+
+    // Scroll reveal
+    const cards=document.querySelectorAll('.card');
+    const io=new IntersectionObserver((entries,obs)=>{
+      entries.forEach((e,i)=>{
+        if(e.isIntersecting){
+          setTimeout(()=>e.target.classList.add('visible'),i*50);
+          obs.unobserve(e.target);
+        }
+      });
+    },{threshold:0.08});
+    cards.forEach(c=>io.observe(c));
+
+    // Lightbox & Link Logic
+    const lb=document.getElementById('lightbox'),
+          lbImg=document.getElementById('lbImg'),
+          lbTitle=document.getElementById('lbTitle'),
+          lbTag=document.getElementById('lbTag');
+          
+    cards.forEach(c => c.addEventListener('click', () => {
+      // Kiểm tra nếu có chèn link trong data-link
+      const link = c.getAttribute('data-link');
+      if (link && link.trim() !== '') {
+        // Mở link trong tab mới
+        window.open(link, '_blank');
+      } else {
+        // Nếu không có link, mở lightbox như cũ
+        lbImg.src = c.querySelector('img').src;
+        lbTitle.textContent = c.dataset.title;
+        lbTag.textContent = c.dataset.tag;
+        lb.classList.add('open');
+      }
+    }));
+    
+    // Đóng Lightbox
+    document.getElementById('lbClose').onclick = () => lb.classList.remove('open');
+    lb.addEventListener('click', e => { if(e.target === lb) lb.classList.remove('open'); });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') lb.classList.remove('open'); });
+  </script>
+</body>
+</html>
