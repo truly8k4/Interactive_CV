@@ -732,9 +732,22 @@
     </div>
   </section>
   
-  <section style="padding: 2rem 5vw 4rem; background: var(--bg); display: flex; justify-content: center;">
-    <div style="width: 100%; max-width: 800px;">
-      <h2 style="font-family: 'Syne', sans-serif; color: var(--text); font-size: 24px; margin-bottom: 20px; font-weight: 800; text-align: center;">Feedback & Comments</h2>
+  <section style="padding: 4rem 5vw; background: var(--bg); display: flex; justify-content: center; border-top: 1px solid var(--line);">
+    <div style="width: 100%; max-width: 900px; background: var(--surface); border-radius: 16px; padding: 40px; border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+      
+      <h2 style="font-family: 'Syne', sans-serif; color: var(--text); font-size: 28px; margin-bottom: 30px; font-weight: 800; text-align: left; display: flex; align-items: center; gap: 15px;">
+        <span style="width: 30px; height: 2px; background: var(--accent);"></span>
+        Feedback & Comments
+      </h2>
+      
+      <style>
+        #cusdis_thread iframe {
+          width: 100% !important;
+          min-height: 350px !important;
+          border: none !important;
+          overflow: hidden !important;
+        }
+      </style>
       
       <div id="cusdis_thread"
         data-host="https://cusdis.com"
@@ -744,8 +757,8 @@
         data-page-title="Portfolio Multimedia Design"
         data-theme="dark">
       </div>
+      
       <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
-
     </div>
   </section>
 
